@@ -1,0 +1,24 @@
+{
+    "caffe flavor": "NVIDIA",
+    "caffe version": "0.15.13",
+    "creation time": "2017-06-26 14:39:20.160032",
+    "dataset_id": "20170626-133704-ec9b",
+    "deploy file": "deploy.prototxt",
+    "digits version": "5.0.0",
+    "framework": "caffe",
+    "id": "20170626-143920-6ae8",
+    "image dimensions": [
+        300,
+        400,
+        3
+    ],
+    "job id": "20170626-143920-6ae8",
+    "mean file": "mean.binaryproto",
+    "model file": "original.prototxt",
+    "name": "leggoNetOnlegggonetryftg",
+    "snapshot file": "snapshot_iter_1600.caffemodel",
+    "solver file": "solver.prototxt",
+    "status": "Aborted",
+    "train_val file": "train_val.prototxt",
+    "username": "mokshith"
+}
