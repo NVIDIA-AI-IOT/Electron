@@ -1,0 +1,24 @@
+{
+    "caffe flavor": "NVIDIA",
+    "caffe version": "0.15.13",
+    "creation time": "2017-06-27 14:47:53.587322",
+    "dataset_id": "20170627-143952-8877",
+    "deploy file": "deploy.prototxt",
+    "digits version": "5.0.0",
+    "framework": "caffe",
+    "id": "20170627-144753-9c66",
+    "image dimensions": [
+        300,
+        400,
+        3
+    ],
+    "job id": "20170627-144753-9c66",
+    "mean file": "mean.binaryproto",
+    "model file": "original.prototxt",
+    "name": "Base w/ neg",
+    "snapshot file": "snapshot_iter_117.caffemodel",
+    "solver file": "solver.prototxt",
+    "status": "Running",
+    "train_val file": "train_val.prototxt",
+    "username": "mokshith"
+}
