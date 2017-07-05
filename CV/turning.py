@@ -15,10 +15,20 @@ def get_angle_of_foot(oframe, leg_point):
     triangle_base_height = triangle_base_length/math.tan(ANGLE_OF_VISION/2)
     return math.atan(triangle_base_length / triangle_base_height)
 
-leg_left_point = [0, 0] #this is temporary until we get ros up and running
-leg_right_point = [0, 0] #this is temporary until we get ros up and running
+file_read = open("test.txt", "r")
+line_num = 0;
+while True:
+    file_read = open("test.txt", "r")
+    lines = file_read.readlines()
+    print lines
+    while not lines[line_num][0].isdigit():
+        line_num = line_num + 1
+    splits = lines[line_num].split()
+    leg_left_point = [splits[0], splits[1]] #this is temporary until we get ros up and running
+    leg_right_point = [splits[2], splits[3]] #this is temporary until we get ros up and running
+    print leg_left_point
+    grabbed, frame = camera.read()
+    frame = cv2.flip(frame, 1)
 
-grabbed, frame = camera.read()
-frame = cv2.flip(frame, 1)
-
-print "angle range between which leg exists: " , get_angle_of_foot(frame, leg_left_point), " to ", get_angle_of_foot(frame, leg_right_point)
+    print "angle range between which leg exists: " , get_angle_of_foot(frame, leg_left_point), " to ", get_angle_of_foot(frame, leg_right_point)
+    line_num = line_num+1
