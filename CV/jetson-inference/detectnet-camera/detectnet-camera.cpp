@@ -2,8 +2,10 @@
  * http://github.com/dusty-nv/jetson-inference
  */
 
- #include <iostream>
- #include <fstream>
+#include <iostream>
+#include <fstream>
+#include <math.h>
+#include <cmath>
 
 #include "gstCamera.h"
 
@@ -13,8 +15,6 @@
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
-#include <math.h>
-#include <cmath>
 
 #include "cudaMappedMemory.h"
 #include "cudaNormalize.h"
@@ -109,7 +109,6 @@ int main( )
 	{
 		texture = glTexture::Create(camera->GetWidth(), camera->GetHeight(), GL_RGBA32F_ARB/*GL_RGBA8*/);
 	}
-unistd
 
 	/*
 	 * create font
@@ -165,15 +164,14 @@ unistd
 					printf("%f %f %f %f\n", bb[0], bb[1], bb[2], bb[3]);
           float width = camera->GetWidth();
           float height = camera->GetHeight();
-          float baseLength = sqrt(pow((bb[0]-(width/2)), 2) + pow((bb[1]-(height/2)), 2))
-          float baseHeight = baseLength/tan(visionAngle/2)
-          printf("left: %f", atan(triangle_base_length / triangle_base_height));
+          float baseLength = sqrt(pow((bb[0]-(width/2)), 2) + pow((bb[1]-(height/2)), 2));
+          float baseHeight = (width/2)/tan(visionAngle/2);
+          printf("left: %f ", atan(baseLength / baseHeight)*180/M_PI);
           width = camera->GetWidth();
           height = camera->GetHeight();
-          baseLength = sqrt(pow((bb[2]-(width/2)), 2) + pow((bb[1]-(height/2)), 2))
-          baseHeight = baseLength/tan(visionAngle/2)
-          printf("right: %f\n", atan(triangle_base_length / triangle_base_height));
-          printf()
+          baseLength = sqrt(pow((bb[2]-(width/2)), 2) + pow((bb[1]-(height/2)), 2));
+          baseHeight = (width/2)/tan(visionAngle/2);
+          printf("right: %f\n", atan(baseLength / baseHeight)*180/M_PI);
 				}
 				count+=1;
 
