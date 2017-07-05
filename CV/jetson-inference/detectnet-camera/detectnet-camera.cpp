@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
+#include <math.h>
+#include <cmath>
 
 #include "cudaMappedMemory.h"
 #include "cudaNormalize.h"
@@ -69,7 +71,7 @@ int main( )
 	 * create detectNet
 	 */
 	detectNet* net = detectNet::Create("networks/InitialLegNet/deploy.prototxt", "networks/InitialLegNet/snapshot_iter_3250.caffemodel", "networks/InitialLegNet/mean.binaryproto", 0.5, "data", "coverage", "bboxes", 2 );
-	
+
 	if( !net )
 	{
 		return 0;
@@ -77,7 +79,7 @@ int main( )
 
 
 	/*
-	 * allocate memory for output bounding boxes and class confidence
+	 * allocate memory for output bounding bounistdxes and class confidence
 	 */
 	const uint32_t maxBoxes = net->GetMaxBoundingBoxes();
 	const uint32_t classes  = net->GetNumClasses();
@@ -107,7 +109,7 @@ int main( )
 	{
 		texture = glTexture::Create(camera->GetWidth(), camera->GetHeight(), GL_RGBA32F_ARB/*GL_RGBA8*/);
 	}
-
+unistd
 
 	/*
 	 * create font
@@ -130,7 +132,7 @@ int main( )
 	float confidence = 0.0f;
 	int count = 0;
 	std::ofstream myfile;
-  	
+
 	while( !signal_recieved )
 	{
 		void* imgCPU  = NULL;
@@ -158,9 +160,20 @@ int main( )
 				const int nc = confCPU[n*2+1];
 				float* bb = bbCPU + (n * 4);
 
-				
+        float visionAngle = 1.36136;
 				if (count % 2 == 0) {
 					printf("%f %f %f %f\n", bb[0], bb[1], bb[2], bb[3]);
+          float width = camera->GetWidth();
+          float height = camera->GetHeight();
+          float baseLength = sqrt(pow((bb[0]-(width/2)), 2) + pow((bb[1]-(height/2)), 2))
+          float baseHeight = baseLength/tan(visionAngle/2)
+          printf("left: %f", atan(triangle_base_length / triangle_base_height));
+          width = camera->GetWidth();
+          height = camera->GetHeight();
+          baseLength = sqrt(pow((bb[2]-(width/2)), 2) + pow((bb[1]-(height/2)), 2))
+          baseHeight = baseLength/tan(visionAngle/2)
+          printf("right: %f\n", atan(triangle_base_length / triangle_base_height));
+          printf()
 				}
 				count+=1;
 
