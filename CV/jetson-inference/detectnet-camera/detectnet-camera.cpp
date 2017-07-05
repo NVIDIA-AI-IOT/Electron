@@ -30,7 +30,6 @@ void sig_handler(int signo)
 {
 	if( signo == SIGINT )
 	{
-		printf("received SIGINT\n");
 		signal_recieved = true;
 	}
 }
@@ -53,8 +52,6 @@ int main( )
 			networkType = detectNet::FACENET;
 	}*/
 
-	if( signal(SIGINT, sig_handler) == SIG_ERR )
-		printf("\ncan't catch SIGINT\n");
 
 
 	/*
@@ -64,25 +61,17 @@ int main( )
 
 	if( !camera )
 	{
-		printf("\ndetectnet-camera:  failed to initialize video device\n");
 		return 0;
 	}
-
-	printf("\ndetectnet-camera:  successfully initialized video device\n");
-	printf("    width:  %u\n", camera->GetWidth());
-	printf("   height:  %u\n", camera->GetHeight());
-	printf("    depth:  %u (bpp)\n\n", camera->GetPixelDepth());
 
 
 	/*
 	 * create detectNet
 	 */
 	detectNet* net = detectNet::Create("networks/InitialLegNet/deploy.prototxt", "networks/InitialLegNet/snapshot_iter_3250.caffemodel", "networks/InitialLegNet/mean.binaryproto", 0.5, "data", "coverage", "bboxes", 2 );
-	ofstream myfile;
-  myfile.open ("test.txt");
+	
 	if( !net )
 	{
-		printf("detectnet-camera:   failed to initialize imageNet\n");
 		return 0;
 	}
 
@@ -90,7 +79,7 @@ int main( )
 	/*
 	 * allocate memory for output bounding boxes and class confidence
 	 */
-	const uint32_t maxBoxes = net->GetMaxBoundingBoxes();		printf("maximum bounding boxes:  %u\n", maxBoxes);
+	const uint32_t maxBoxes = net->GetMaxBoundingBoxes();
 	const uint32_t classes  = net->GetNumClasses();
 
 	float* bbCPU    = NULL;
@@ -101,7 +90,6 @@ int main( )
 	if( !cudaAllocMapped((void**)&bbCPU, (void**)&bbCUDA, maxBoxes * sizeof(float4)) ||
 	    !cudaAllocMapped((void**)&confCPU, (void**)&confCUDA, maxBoxes * classes * sizeof(float)) )
 	{
-		printf("detectnet-console:  failed to alloc output memory\n");
 		return 0;
 	}
 
@@ -113,14 +101,11 @@ int main( )
 	glTexture* texture = NULL;
 
 	if( !display ) {
-		printf("\ndetectnet-camera:  failed to create openGL display\n");
+
 	}
 	else
 	{
 		texture = glTexture::Create(camera->GetWidth(), camera->GetHeight(), GL_RGBA32F_ARB/*GL_RGBA8*/);
-
-		if( !texture )
-			printf("detectnet-camera:  failed to create openGL texture\n");
 	}
 
 
@@ -135,11 +120,8 @@ int main( )
 	 */
 	if( !camera->Open() )
 	{
-		printf("\ndetectnet-camera:  failed to open camera for streaming\n");
 		return 0;
 	}
-
-	printf("\ndetectnet-camera:  camera open for streaming\n");
 
 
 	/*
@@ -147,27 +129,26 @@ int main( )
 	 */
 	float confidence = 0.0f;
 	int count = 0;
+	std::ofstream myfile;
+  	
 	while( !signal_recieved )
 	{
 		void* imgCPU  = NULL;
 		void* imgCUDA = NULL;
 
 		// get the latest frame
-		if( !camera->Capture(&imgCPU, &imgCUDA, 1000) )
-			printf("\ndetectnet-camera:  failed to capture frame\n");
+		camera->Capture(&imgCPU, &imgCUDA, 1000);
 
 		// convert from YUV to RGBA
 		void* imgRGBA = NULL;
 
-		if( !camera->ConvertRGBA(imgCUDA, &imgRGBA) )
-			printf("detectnet-camera:  failed to convert from NV12 to RGBA\n");
+		camera->ConvertRGBA(imgCUDA, &imgRGBA);
 
 		// classify image with detectNet
 		int numBoundingBoxes = maxBoxes;
 
 		if( net->Detect((float*)imgRGBA, camera->GetWidth(), camera->GetHeight(), bbCPU, &numBoundingBoxes, confCPU))
 		{
-			printf("%i bounding boxes detected\n", numBoundingBoxes);
 
 			int lastClass = 0;
 			int lastStart = 0;
@@ -177,18 +158,17 @@ int main( )
 				const int nc = confCPU[n*2+1];
 				float* bb = bbCPU + (n * 4);
 
-				printf("bounding box %i   (%f, %f)  (%f, %f)  w=%f  h=%f\n", n, bb[0], bb[1], bb[2], bb[3], bb[2] - bb[0], bb[3] - bb[1]);
-				if (count % 10 == 0) {
-					myfile << bb[0]+" "+bb[1]+" "+bb[2]+" "+bb[3];
+				
+				if (count % 2 == 0) {
+					printf("%f %f %f %f\n", bb[0], bb[1], bb[2], bb[3]);
 				}
-				count++;
+				count+=1;
 
 
 				if( nc != lastClass || n == (numBoundingBoxes - 1) )
 				{
-					if( !net->DrawBoxes((float*)imgRGBA, (float*)imgRGBA, camera->GetWidth(), camera->GetHeight(),
-						                        bbCUDA + (lastStart * 4), (n - lastStart) + 1, lastClass) )
-						printf("detectnet-console:  failed to draw boxes\n");
+					net->DrawBoxes((float*)imgRGBA, (float*)imgRGBA, camera->GetWidth(), camera->GetHeight(),
+						                        bbCUDA + (lastStart * 4), (n - lastStart) + 1, lastClass);
 
 					lastClass = nc;
 					lastStart = n;
@@ -245,8 +225,6 @@ int main( )
 			display->EndRender();
 		}
 	}
-	myfile.close()
-	printf("\ndetectnet-camera:  un-initializing video device\n");
 
 
 	/*
@@ -263,8 +241,5 @@ int main( )
 		delete display;
 		display = NULL;
 	}
-
-	printf("detectnet-camera:  video device has been un-initialized.\n");
-	printf("detectnet-camera:  this concludes the test of the video device.\n");
 	return 0;
 }

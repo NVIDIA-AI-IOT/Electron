@@ -40,16 +40,6 @@ detectNet* detectNet::Create( const char* prototxt, const char* model, const cha
 	
 	if( !net )
 		return NULL;
-
-	printf("\n");
-	printf("detectNet -- loading detection network model from:\n");
-	printf("          -- prototxt    %s\n", prototxt);
-	printf("          -- model       %s\n", model);
-	printf("          -- input_blob  '%s'\n", input_blob);
-	printf("          -- output_cvg  '%s'\n", coverage_blob);
-	printf("          -- output_bbox '%s'\n", bbox_blob);
-	printf("          -- threshold   %f\n", threshold);
-	printf("          -- batch_size  %u\n\n", maxBatchSize);
 	
 	//net->EnableDebug();
 	
@@ -57,11 +47,7 @@ detectNet* detectNet::Create( const char* prototxt, const char* model, const cha
 	output_blobs.push_back(coverage_blob);
 	output_blobs.push_back(bbox_blob);
 	
-	if( !net->LoadNetwork(prototxt, model, mean_binary, input_blob, output_blobs) )
-	{
-		printf("detectNet -- failed to initialize.\n");
-		return NULL;
-	}
+	net->LoadNetwork(prototxt, model, mean_binary, input_blob, output_blobs);
 	
 	const uint32_t numClasses = net->GetNumClasses();
 	
@@ -198,7 +184,6 @@ static void mergeRect( std::vector<float6>& rects, const float6& rect )
 			intersects = true;   
 
 #ifdef DEBUG_CLUSTERING
-			printf("found overlap\n");		
 #endif
 
 			if( rect.x < rects[r].x ) 	rects[r].x = rect.x;
@@ -221,7 +206,6 @@ bool detectNet::Detect( float* rgba, uint32_t width, uint32_t height, float* bou
 {
 	if( !rgba || width == 0 || height == 0 || !boundingBoxes || !numBoxes || *numBoxes < 1 )
 	{
-		printf("detectNet::Detect( 0x%p, %u, %u ) -> invalid parameters\n", rgba, width, height);
 		return false;
 	}
 
@@ -230,7 +214,6 @@ bool detectNet::Detect( float* rgba, uint32_t width, uint32_t height, float* bou
 	if( CUDA_FAILED(cudaPreImageNetMean((float4*)rgba, width, height, mInputCUDA, mWidth, mHeight,
 								  make_float3(104.0069879317889f, 116.66876761696767f, 122.6789143406786f))) )
 	{
-		printf("detectNet::Classify() -- cudaPreImageNetMean failed\n");
 		return false;
 	}
 	
@@ -239,7 +222,6 @@ bool detectNet::Detect( float* rgba, uint32_t width, uint32_t height, float* bou
 	
 	if( !mContext->execute(1, inferenceBuffers) )
 	{
-		printf(LOG_GIE "detectNet::Classify() -- failed to execute tensorRT context\n");
 		*numBoxes = 0;
 		return false;
 	}
@@ -262,10 +244,6 @@ bool detectNet::Detect( float* rgba, uint32_t width, uint32_t height, float* bou
 	const float scale_y = float(height) / float(mInputDims.h);
 
 #ifdef DEBUG_CLUSTERING	
-	printf("input width %i height %i\n", (int)mInputDims.w, (int)mInputDims.h);
-	printf("cells x %i  y %i\n", ow, oh);
-	printf("cell width %f  height %f\n", cell_width, cell_height);
-	printf("scale x %f  y %f\n", scale_x, scale_y);
 #endif
 #if 1
 	std::vector< std::vector<float6> > rects;
@@ -293,7 +271,6 @@ bool detectNet::Detect( float* rgba, uint32_t width, uint32_t height, float* bou
 					const float y2 = (net_rects[3 * owh + y * ow + x] + my) * scale_y;	// bottom 
 					
 				#ifdef DEBUG_CLUSTERING
-					printf("rect x=%u y=%u  cvg=%f  %f %f   %f %f \n", x, y, coverage, x1, x2, y1, y2);
 				#endif					
 					mergeRect( rects[z], make_float6(x1, y1, x2, y2, coverage, z) );
 				}
@@ -349,7 +326,6 @@ bool detectNet::DrawBoxes( float* input, float* output, uint32_t width, uint32_t
 									  mClassColors[0][classIndex*4+2],
 									  mClassColors[0][classIndex*4+3] );
 	
-	printf("draw boxes  %i  %i   %f %f %f %f\n", numBoxes, classIndex, color.x, color.y, color.z, color.w);
 	
 	if( CUDA_FAILED(cudaRectOutlineOverlay((float4*)input, (float4*)output, width, height, (float4*)boundingBoxes, numBoxes, color)) )
 		return false;
