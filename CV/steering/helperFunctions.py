@@ -50,11 +50,21 @@ def save_data_to_arrays(joyDataTxt, scanDataTxt):
                 joystickData.append(joystickDataTemp[num]) # get the joy data based on timestamp and add that to real joydata output
                 break
             num = num + 1
-    return lidarData, joystickData
+    count = 0
+    print(len(lidarData[0]))
+    for x in lidarData:
+        count1 = 0
+        for y in lidarData[count]:
+            lidarData[count][count1] = [count1+1, y]
+            count1 = count1 + 1
+        count1 = 0
+        count = count + 1
+    return np.array(lidarData), np.array(joystickData)
 
-def split_data_train_val(data):
-    # split data so that 80% is training and 20% is validation
-    split_point = int(len(data) * 0.8)
-    train = data[:split_point]
-    val = data[split_point:]
-    return train, val
+# ld, jd = save_data_to_arrays('joyData.txt', 'scanData.txt')
+# print(ld)
+# print(ld[0])
+# print(len(ld[0]))
+# print(len(ld))
+# print(ld.shape)
+# print(jd.shape)

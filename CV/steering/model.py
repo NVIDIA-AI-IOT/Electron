@@ -9,7 +9,7 @@ import keras
 from keras.layers import Input, Dense, merge
 from keras.models import Model
 from keras.models import Sequential
-from keras.layers import Convolution2D, MaxPooling2D, SimpleRNN, Reshape, BatchNormalization
+from keras.layers import Convolution2D, Convolution1D, MaxPooling2D, MaxPooling1D, SimpleRNN, Reshape, BatchNormalization
 from keras.layers import Activation, Dropout, Flatten, Dense
 from keras.regularizers import l2
 from keras.utils import plot_model
@@ -17,29 +17,43 @@ import helperFunctions
 
 
 def get_model():
-    lid = Input(shape = (360, ), name = 'lid')
-    # x = Convolution2D(8, 2, 2)(lid)
-    x = Activation('relu')(lid)
+    # model = Sequential((
+    #
+    #     # Convolution1D(nb_filter=8, filter_length=2, activation='relu', input_shape=(360, )),
+    #     MaxPooling1D(input_shape=(360, )),     # Downsample tfilter_lengthhe output of convolution by 2X.
+    #     # Convolution1D(nb_filter=16, filter_length=2, activation='relu'),
+    #     MaxPooling1D(),
+    #     Flatten(),
+    #     Dense(128, activation='linear'),
+    #     Activation('relu'),
+    #     Activation('relu'),
+    #     Dropout(0.3),
+    #     Dense(1, name='jstk'),
+    #
+    # ))
+    lid = Input(shape = (360, 2), name = 'lid')
+    x = Convolution1D(8, 2)(lid)
+    x = Activation('relu')(x)
     # x = MaxPooling2D(pool_size=(2, 2))(x)
 
-    # x = Convolution2D(16, 2, 2)(lid)
-    x = Activation('relu')(lid)
+    x = Convolution1D(16, 2)(lid)
+    x = Activation('relu')(x)
     # x = MaxPooling2D(pool_size=(2, 2))(x)
 
-    # x = Convolution2D(32, 2, 2)(lid)
-    x = Activation('relu')(lid)
+    x = Convolution1D(32, 2)(lid)
+    x = Activation('relu')(x)
     # x = MaxPooling2D(pool_size=(2, 2))(x)
 
-    # merged = Flatten()(x)
+    merged = Flatten()(x)
 
-    x = Dense(128)(x)
+    x = Dense(128)(merged)
     x = Activation('linear')(x)
     x = Dropout(.3)(x)
 
     jstk = Dense(1, name='jstk')(x)
 
     net = Model(input=[lid], output=[jstk])
-    net.compile(optimizer='adadelta', loss='mean_squared_error')
+    net.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
     print(net.summary())
     return net
 
@@ -53,14 +67,6 @@ def trainModel(model, lidarIn, jstkOut):
     print("Saved as %s" %(modelName))
     return model
 
-def testModel(model, testX, testY):
-    # Test model and evauluate accuracy, prints it
-    scores = model.evaluate(testX, testY)
-    print("\nAccuracy: " + model.metrics_name[1], scores[1]*100)
-
 unsplit_lidar, unsplit_joydata = helperFunctions.save_data_to_arrays('joyData.txt', 'scanData.txt')
-train_lidar, val_lidar = helperFunctions.split_data_train_val(unsplit_lidar)
-train_joy, val_joy = helperFunctions.split_data_train_val(unsplit_joydata)
 lidModel = get_model()
-trained_lidModel = trainModel(lidModel, train_lidar, train_joy)
-testModel(trained_lidModel, val_lidar, val_joy)
+trained_lidModel = trainModel(lidModel, unsplit_lidar, unsplit_joydata)
