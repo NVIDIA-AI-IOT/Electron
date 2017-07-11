@@ -15,7 +15,7 @@ from keras.regularizers import l2
 
 
 def get_model():
-    lid = Input(shape = (72, 2), name = 'lid')
+    lid = Input(shape = (360, 1), name = 'lid')
     x = Convolution2D(8, 2, 2)(lid)
     x = Activation('relu')(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)

@@ -47,7 +47,7 @@ def formatt(joyDataTxt, scanDataTxt):
         line = line.replace('inf', 'None')
         if line.startswith('axes'):
             edited = line[6:]
-            joystickDataTemp.append(eval(edited))
+            joystickDataTemp.append(eval(edited)[3])
         if line.startswith('    secs'):
             edited = line[10:]
             tempSec = eval(edited)
@@ -71,3 +71,6 @@ def formatt(joyDataTxt, scanDataTxt):
 lid, joys = formatt('joyData.txt', 'scanData.txt')
 print(len(lid))
 print(len(joys))
+print(np.array(lid).shape)
+print(np.array(joys).shape)
+print(np.array(joys))
