@@ -1,33 +1,17 @@
 import numpy as np
 
-SPLIT_STRING = '---'
-
-def get_lidar_avg_data_list(data_list):
-    out = list() # output list
-    high = 5 # average every 5 angles to use as 1 reading
-    temp = list() # temporary list used to save values to average later
-    for tup in data_list:
-        if tup[1] <= high: # check if reading angle is in the range of 5
-            temp.append(tup[2]) # add the distance to the temp list to average later
-        else: # if the reading is in a new set of 5 readings
-            out.append([high-5, sum(temp)/len(temp)])
-            high = high + 5
-            temp = list()
-            temp.append(tup[2])
-    return out
-
-def formatt(joyDataTxt, scanDataTxt):
+def save_data_to_arrays(joyDataTxt, scanDataTxt):
     jtxt = open(joyDataTxt, 'r') # open joystick data
     stxt = open(scanDataTxt, 'r') # open lidar data
 
-    lidarTimeStamps = []
-    lidarData = []
-    joyStickTimeStampsTemp = []
-    joystickDataTemp = []
+    lidarTimeStamps = [] # this is the list containing the timestamps of the lidar data
+    lidarData = [] # this is the lidar data put in the same order as the list above so they correlate with each other
+    joyStickTimeStampsTemp = [] # this is a list of joystick timestamps which can be used to map joystick data to lidar data
+    joystickDataTemp = [] # this is unfiltered joystick data that can be mapped to lidar data as a label to the input of the lidar
+    joystickData = [] # joy data that has been mapped to lidar data
 
-    count = 0
-    tempSec = 0
-    tempNSec = 0
+    tempSec = 0 # this number is updated every time the program hits a seconds tag in the data text file
+    tempNSec = 0 # same as above but for nanoseconds
     for line in stxt:
         line = line.replace('inf', 'None') # replace string so that I can use eval function
         if line.startswith('ranges'):
@@ -40,11 +24,13 @@ def formatt(joyDataTxt, scanDataTxt):
             edited = line[11:]
             tempNSec = eval(edited) # parse the nsecs number
             lidarTimeStamps.append((tempSec*1000)+(tempNSec/1000000)) # create timestamp and add that to list
-        count = count + 1
+
+    # if not understood above, eval is able to take in a text representation of a number, array, or whatever type and can convert that
+    # into manipulatable data
 
     # read comments of above loop to see how this works. It's pretty much the same except for joystick
     for line in jtxt:
-        line = line.replace('inf', 'None')
+        line = line.replace('inf', 'None') # did this so that I could use eval later
         if line.startswith('axes'):
             edited = line[6:]
             joystickDataTemp.append(eval(edited)[3])
@@ -55,9 +41,7 @@ def formatt(joyDataTxt, scanDataTxt):
             edited = line[11:]
             tempNSec = eval(edited)
             joyStickTimeStampsTemp.append((tempSec*1000)+(tempNSec/1000000))
-        count = count + 1
 
-    joystickData = []
     for lidStamp in lidarTimeStamps:
         closest = min(joyStickTimeStampsTemp, key=lambda x: abs(x-long(lidStamp))) # find closest joystick value to lidar value via timestamp
         num = 0
@@ -68,9 +52,9 @@ def formatt(joyDataTxt, scanDataTxt):
             num = num + 1
     return lidarData, joystickData
 
-lid, joys = formatt('joyData.txt', 'scanData.txt')
-print(len(lid))
-print(len(joys))
-print(np.array(lid).shape)
-print(np.array(joys).shape)
-print(np.array(joys))
+def split_data_train_val(data):
+    # split data so that 80% is training and 20% is validation
+    split_point = int(len(data) * 0.8)
+    train = data[:split_point]
+    val = data[split_point:]
+    return train, val
