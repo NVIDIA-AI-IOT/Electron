@@ -87,7 +87,7 @@ endforeach()
 
 # build samples & utilities
 add_subdirectory(detectnet-camera)
-
+add_subdirectory(imagenet-camera)
 
 # install
 foreach(include ${inferenceIncludes})
