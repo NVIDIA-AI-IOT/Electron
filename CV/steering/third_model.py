@@ -44,6 +44,26 @@ def get_model():
     x = Activation('relu')(x)
     x = MaxPooling1D(pool_size=(2))(x)
 
+    x = Convolution1D(64, 2)(lid)
+    x = Activation('relu')(x)
+    x = MaxPooling1D(pool_size=(2))(x)
+
+    x = Convolution1D(128, 2)(lid)
+    x = Activation('relu')(x)
+    x = MaxPooling1D(pool_size=(2))(x)
+
+    x = Convolution1D(256, 2)(lid)
+    x = Activation('relu')(x)
+    x = MaxPooling1D(pool_size=(2))(x)
+
+    x = Convolution1D(512, 2)(lid)
+    x = Activation('relu')(x)
+    x = MaxPooling1D(pool_size=(2))(x)
+
+    x = Convolution1D(1024, 2)(lid)
+    x = Activation('relu')(x)
+    x = MaxPooling1D(pool_size=(2))(x)
+
     merged = Flatten()(x)
 
     x = Dense(128)(merged)
@@ -58,7 +78,7 @@ def get_model():
     return net
 
 def trainModel(model, lidarIn, jstkOut):
-    model.fit(x=lidarIn, y=jstkOut, batch_size=32, epochs=100, verbose=2, callbacks=None, validation_split=0.2, shuffle=True, initial_epoch=0)
+    model.fit(x=lidarIn, y=jstkOut, batch_size=32, epochs=250, verbose=2, callbacks=None, validation_split=0.2, shuffle=True, initial_epoch=0)
     modelName = raw_input("Please enter the trained models filename")
     modelPng = modelName + ".png"
     modelName = modelName + ".h5"

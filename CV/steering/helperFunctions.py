@@ -51,7 +51,6 @@ def save_data_to_arrays(joyDataTxt, scanDataTxt):
                 break
             num = num + 1
     count = 0
-    print(len(lidarData[0]))
     for x in lidarData:
         count1 = 0
         for y in lidarData[count]:
@@ -59,6 +58,9 @@ def save_data_to_arrays(joyDataTxt, scanDataTxt):
             count1 = count1 + 1
         count1 = 0
         count = count + 1
+
+    for i in xrange(len(joystickData)):
+        print(str(joystickData[i]))
     return np.array(lidarData), np.array(joystickData)
 
 # ld, jd = save_data_to_arrays('joyData.txt', 'scanData.txt')
