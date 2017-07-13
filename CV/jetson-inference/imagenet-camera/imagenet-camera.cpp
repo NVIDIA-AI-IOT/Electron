@@ -16,10 +16,10 @@
 #include "imageNet.h"
 
 
-#define DEFAULT_CAMERA 1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)	
-		
+#define DEFAULT_CAMERA 1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)
+
 using namespace std;
-		
+
 bool signal_recieved = false;
 
 void sig_handler(int signo)
@@ -38,9 +38,9 @@ int main( int argc, char** argv )
 
 	for( int i=0; i < argc; i++ )
 		printf("%i [%s]  ", i, argv[i]);
-		
+
 	printf("\n\n");
-	
+
 
 	/*
 	 * attach signal handler
@@ -53,24 +53,24 @@ int main( int argc, char** argv )
 	 * create the camera device
 	 */
 	gstCamera* camera = gstCamera::Create(DEFAULT_CAMERA);
-	
+
 	if( !camera )
 	{
 		printf("\nimagenet-camera:  failed to initialize video device\n");
 		return 0;
 	}
-	
+
 	printf("\nimagenet-camera:  successfully initialized video device\n");
 	printf("    width:  %u\n", camera->GetWidth());
 	printf("   height:  %u\n", camera->GetHeight());
 	printf("    depth:  %u (bpp)\n\n", camera->GetPixelDepth());
-	
+
 
 	/*
 	 * create imageNet
 	 */
 	imageNet* net = imageNet::Create(argc, argv);
-	
+
 	if( !net )
 	{
 		printf("imagenet-console:   failed to initialize imageNet\n");
@@ -83,7 +83,7 @@ int main( int argc, char** argv )
 	 */
 	glDisplay* display = glDisplay::Create();
 	glTexture* texture = NULL;
-	
+
 	if( !display ) {
 		printf("\nimagenet-camera:  failed to create openGL display\n");
 	}
@@ -94,13 +94,13 @@ int main( int argc, char** argv )
 		if( !texture )
 			printf("imagenet-camera:  failed to create openGL texture\n");
 	}
-	
-	
+
+
 	/*
 	 * create font
 	 */
 	cudaFont* font = cudaFont::Create();
-	
+
 
 	/*
 	 * start streaming
@@ -110,29 +110,29 @@ int main( int argc, char** argv )
 		printf("\nimagenet-camera:  failed to open camera for streaming\n");
 		return 0;
 	}
-	
+
 	printf("\nimagenet-camera:  camera open for streaming\n");
-	
-	
+
+
 	/*
 	 * processing loop
 	 */
 	float confidence = 0.0f;
-	
+	bool lastFrameThere = false;
 	while( !signal_recieved )
 	{
 		void* imgCPU  = NULL;
 		void* imgCUDA = NULL;
-		
+
 		// get the latest frame
 		if( !camera->Capture(&imgCPU, &imgCUDA, 1000) )
 			printf("\nimagenet-camera:  failed to capture frame\n");
 		//else
 		//	printf("imagenet-camera:  recieved new frame  CPU=0x%p  GPU=0x%p\n", imgCPU, imgCUDA);
-		
+
 		// convert from YUV to RGBA
 		void* imgRGBA = NULL;
-		
+
 		if( !camera->ConvertRGBA(imgCUDA, &imgRGBA) )
 			printf("imagenet-camera:  failed to convert from NV12 to RGBA\n");
 
@@ -147,25 +147,31 @@ int main( int argc, char** argv )
 				|| (desc.compare("notebook, notebook computer") == 0) || (desc.compare("notebook, notebook computer") == 0)
 				|| (desc.compare("notebook, notebook computer") == 0) || (desc.compare("notebook, notebook computer") == 0)){
 				printf("imagenet-camera:  %2.5f%% class #%i (%s)\n", confidence * 100.0f, img_class, net->GetClassDesc(img_class));
-			}	
-			
+				if (lastFrameThere == false) {
+					printf("imagenet-camera: (%s) taken\n", net->GetClassDesc(img_class))
+				}
+				lastFrameThere = true;
+			}
+
 			if( font != NULL )
 			{
 				char str[256];
 				sprintf(str, "%05.2f%% %s", confidence * 100.0f, net->GetClassDesc(img_class));
-	
+
 				font->RenderOverlay((float4*)imgRGBA, (float4*)imgRGBA, camera->GetWidth(), camera->GetHeight(),
 								    str, 0, 0, make_float4(255.0f, 255.0f, 255.0f, 255.0f));
 			}
-			
+
 			if( display != NULL )
 			{
 				char str[256];
 				sprintf(str, "TensorRT build %x | %s | %s | %04.1f FPS", NV_GIE_VERSION, net->GetNetworkName(), net->HasFP16() ? "FP16" : "FP32", display->GetFPS());
 				//sprintf(str, "TensorRT build %x | %s | %04.1f FPS | %05.2f%% %s", NV_GIE_VERSION, net->GetNetworkName(), display->GetFPS(), confidence * 100.0f, net->GetClassDesc(img_class));
-				display->SetTitle(str);	
-			}	
-		}	
+				display->SetTitle(str);
+			}
+		}	else {
+			lastFrameThere = false;
+		}
 
 
 		// update display
@@ -177,8 +183,8 @@ int main( int argc, char** argv )
 			if( texture != NULL )
 			{
 				// rescale image pixel intensities for display
-				CUDA(cudaNormalizeRGBA((float4*)imgRGBA, make_float2(0.0f, 255.0f), 
-								   (float4*)imgRGBA, make_float2(0.0f, 1.0f), 
+				CUDA(cudaNormalizeRGBA((float4*)imgRGBA, make_float2(0.0f, 255.0f),
+								   (float4*)imgRGBA, make_float2(0.0f, 1.0f),
 		 						   camera->GetWidth(), camera->GetHeight()));
 
 				// map from CUDA to openGL using GL interop
@@ -191,16 +197,16 @@ int main( int argc, char** argv )
 				}
 
 				// draw the texture
-				texture->Render(100,100);		
+				texture->Render(100,100);
 			}
 
 			display->EndRender();
 		}
 	}
-	
+
 	printf("\nimagenet-camera:  un-initializing video device\n");
-	
-	
+
+
 	/*
 	 * shutdown the camera device
 	 */
@@ -215,9 +221,8 @@ int main( int argc, char** argv )
 		delete display;
 		display = NULL;
 	}
-	
+
 	printf("imagenet-camera:  video device has been un-initialized.\n");
 	printf("imagenet-camera:  this concludes the test of the video device.\n");
 	return 0;
 }
-
