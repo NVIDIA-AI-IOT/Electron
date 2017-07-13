@@ -16,9 +16,9 @@
 #include "imageNet.h"
 
 
-#define DEFAULT_CAMERA -1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)	
+#define DEFAULT_CAMERA 1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)	
 		
-		
+using namespace std;
 		
 bool signal_recieved = false;
 
@@ -138,11 +138,17 @@ int main( int argc, char** argv )
 
 		// classify image
 		const int img_class = net->Classify((float*)imgRGBA, camera->GetWidth(), camera->GetHeight(), &confidence);
-	
+		string desc = net->GetClassDesc(img_class);
 		if( img_class >= 0 )
 		{
-			printf("imagenet-camera:  %2.5f%% class #%i (%s)\n", confidence * 100.0f, img_class, net->GetClassDesc(img_class));	
-
+			if((desc.compare("ballpoint, ballpoint pen, ballpen, Biro") == 0) || (desc.compare("notebook, notebook computer") == 0)
+				|| (desc.compare("orange") == 0) || (desc.compare("laptop, laptop computer") == 0)
+				|| (desc.compare("water bottle") == 0) || (desc.compare("Granny Smith") == 0)
+				|| (desc.compare("notebook, notebook computer") == 0) || (desc.compare("notebook, notebook computer") == 0)
+				|| (desc.compare("notebook, notebook computer") == 0) || (desc.compare("notebook, notebook computer") == 0)){
+				printf("imagenet-camera:  %2.5f%% class #%i (%s)\n", confidence * 100.0f, img_class, net->GetClassDesc(img_class));
+			}	
+			
 			if( font != NULL )
 			{
 				char str[256];

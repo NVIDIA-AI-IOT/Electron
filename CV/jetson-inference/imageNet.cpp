@@ -300,7 +300,7 @@ int imageNet::Classify( float* rgba, uint32_t width, uint32_t height, float* con
 		const float value = mOutputs[0].CPU[n];
 		
 		if( value >= 0.01f )
-			printf("class %04zu - %f  (%s)\n", n, value, mClassDesc[n].c_str());
+			//printf("class %04zu - %f  (%s)\n", n, value, mClassDesc[n].c_str());
 	
 		if( value > classMax )
 		{
