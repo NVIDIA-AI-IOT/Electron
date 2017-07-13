@@ -16,7 +16,7 @@
 #include "imageNet.h"
 
 
-#define DEFAULT_CAMERA 1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)
+#define DEFAULT_CAMERA -1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)
 
 using namespace std;
 
@@ -69,8 +69,9 @@ int main( int argc, char** argv )
 	/*
 	 * create imageNet
 	 */
-	imageNet* net = imageNet::Create(argc, argv);
 
+	imageNet* net = imageNet::Create(argc, argv);
+	
 	if( !net )
 	{
 		printf("imagenet-console:   failed to initialize imageNet\n");
@@ -119,6 +120,8 @@ int main( int argc, char** argv )
 	 */
 	float confidence = 0.0f;
 	bool lastFrameThere = false;
+	string lastTaken = "";
+	string last = "";
 	while( !signal_recieved )
 	{
 		void* imgCPU  = NULL;
@@ -147,10 +150,14 @@ int main( int argc, char** argv )
 				|| (desc.compare("notebook, notebook computer") == 0) || (desc.compare("notebook, notebook computer") == 0)
 				|| (desc.compare("notebook, notebook computer") == 0) || (desc.compare("notebook, notebook computer") == 0)){
 				printf("imagenet-camera:  %2.5f%% class #%i (%s)\n", confidence * 100.0f, img_class, net->GetClassDesc(img_class));
-				if (lastFrameThere == false) {
-					printf("imagenet-camera: (%s) taken\n", net->GetClassDesc(img_class))
-				}
 				lastFrameThere = true;
+				last = desc;
+			} else {
+				lastFrameThere = false;
+			}
+			if (lastFrameThere == false) {
+				lastTaken = last;
+				printf("imagenet-camera: (%s) taken\n", lastTaken.c_str());
 			}
 
 			if( font != NULL )
@@ -169,9 +176,7 @@ int main( int argc, char** argv )
 				//sprintf(str, "TensorRT build %x | %s | %04.1f FPS | %05.2f%% %s", NV_GIE_VERSION, net->GetNetworkName(), display->GetFPS(), confidence * 100.0f, net->GetClassDesc(img_class));
 				display->SetTitle(str);
 			}
-		}	else {
-			lastFrameThere = false;
-		}
+		}	
 
 
 		// update display
