@@ -16,7 +16,7 @@
 #include "imageNet.h"
 
 
-#define DEFAULT_CAMERA -1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)
+#define DEFAULT_CAMERA 1	// -1 for onboard camera, or change to index of /dev/video V4L2 camera (>=0)
 
 using namespace std;
 
@@ -70,7 +70,8 @@ int main( int argc, char** argv )
 	 * create imageNet
 	 */
 
-	imageNet* net = imageNet::Create(argc, argv);
+	//imageNet* net = imageNet::Create("networks/ItemNet2/deploy.prototxt", "networks/ItemNet2/snapshot_iter_31659.caffemodel", NULL, "networks/classes1.txt", "data", "softmax");
+	imageNet* net = imageNet::Create("networks/googlenet.prototxt", "networks/bvlc_googlenet.caffemodel", NULL, "networks/ilsvrc12_synset_words.txt");
 	
 	if( !net )
 	{
@@ -144,11 +145,15 @@ int main( int argc, char** argv )
 		string desc = net->GetClassDesc(img_class);
 		if( img_class >= 0 )
 		{
+			//printf("imagenet-camera:  %2.5f%% class #%i (%s)\n", confidence * 100.0f, img_class, net->GetClassDesc(img_class));
+				//lastFrameThere = true;
+				//last = desc;
 			if((desc.compare("ballpoint, ballpoint pen, ballpen, Biro") == 0) || (desc.compare("notebook, notebook computer") == 0)
 				|| (desc.compare("orange") == 0) || (desc.compare("laptop, laptop computer") == 0)
 				|| (desc.compare("water bottle") == 0) || (desc.compare("Granny Smith") == 0)
-				|| (desc.compare("notebook, notebook computer") == 0) || (desc.compare("notebook, notebook computer") == 0)
-				|| (desc.compare("notebook, notebook computer") == 0) || (desc.compare("notebook, notebook computer") == 0)){
+				|| (desc.compare("fountain pen") == 0) || (desc.compare("quill, quill pen") == 0)
+				|| (desc.compare("mouse, computer mouse") == 0) || (desc.compare("screwdriver") == 0)
+				|| (desc.compare("screw") == 0) || (desc.compare("volleyball") == 0)){
 				printf("imagenet-camera:  %2.5f%% class #%i (%s)\n", confidence * 100.0f, img_class, net->GetClassDesc(img_class));
 				lastFrameThere = true;
 				last = desc;
@@ -176,7 +181,13 @@ int main( int argc, char** argv )
 				//sprintf(str, "TensorRT build %x | %s | %04.1f FPS | %05.2f%% %s", NV_GIE_VERSION, net->GetNetworkName(), display->GetFPS(), confidence * 100.0f, net->GetClassDesc(img_class));
 				display->SetTitle(str);
 			}
-		}	
+		}/* else {
+			lastFrameThere = false;
+			if (lastFrameThere == false) {
+				lastTaken = last;
+				printf("imagenet-camera: (%s) taken\n", lastTaken.c_str());
+			}
+		}*/
 
 
 		// update display

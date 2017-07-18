@@ -1,0 +1,9 @@
+apple
+chocolate
+laptop
+marker
+orange
+pen
+processing unit
+sodacan
+waterbottle

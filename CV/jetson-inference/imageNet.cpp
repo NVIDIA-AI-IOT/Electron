@@ -92,7 +92,7 @@ bool imageNet::init( imageNet::NetworkType networkType, uint32_t maxBatchSize )
 	else if( networkType == imageNet::GOOGLENET )
 		return init( "networks/googlenet.prototxt", "networks/bvlc_googlenet.caffemodel", NULL, "networks/ilsvrc12_synset_words.txt", IMAGENET_DEFAULT_INPUT, IMAGENET_DEFAULT_OUTPUT, maxBatchSize );
 	else if( networkType == imageNet::GOOGLENET_12 )
-		return init( "networks/GoogleNet-ILSVRC12-subset/deploy.prototxt", "networks/GoogleNet-ILSVRC12-subset/snapshot_iter_184080.caffemodel", NULL, "networks/GoogleNet-ILSVRC12-subset/labels.txt", IMAGENET_DEFAULT_INPUT, "softmax", maxBatchSize );
+		return init( "networks/ItemNet1/deploy.prototxt", "networks/ItemNet1/snapshot_iter_42000.caffemodel", NULL, "networks/classes.txt", IMAGENET_DEFAULT_INPUT, IMAGENET_DEFAULT_OUTPUT, maxBatchSize );
 }
 
 
@@ -153,7 +153,7 @@ imageNet* imageNet::Create( int argc, char** argv )
 		else if( argc == 4 )
 			modelName = argv[3];
 		else
-			modelName = "googlenet";
+			modelName = "googlenet-12";
 	}
 
 	//if( argc > 3 )
