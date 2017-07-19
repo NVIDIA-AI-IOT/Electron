@@ -154,7 +154,7 @@ int main( int argc, char** argv )
 				|| (desc.compare("fountain pen") == 0) || (desc.compare("quill, quill pen") == 0)
 				|| (desc.compare("mouse, computer mouse") == 0) || (desc.compare("screwdriver") == 0)
 				|| (desc.compare("screw") == 0) || (desc.compare("volleyball") == 0)){
-				printf("imagenet-camera:  %2.5f%% class #%i (%s)\n", confidence * 100.0f, img_class, net->GetClassDesc(img_class));
+				printf("(%s) present\n", net->GetClassDesc(img_class));
 				lastFrameThere = true;
 				last = desc;
 			} else {
@@ -162,7 +162,7 @@ int main( int argc, char** argv )
 			}
 			if (lastFrameThere == false) {
 				lastTaken = last;
-				printf("imagenet-camera: (%s) taken\n", lastTaken.c_str());
+				printf("(%s) taken\n", lastTaken.c_str());
 			}
 
 			if( font != NULL )
