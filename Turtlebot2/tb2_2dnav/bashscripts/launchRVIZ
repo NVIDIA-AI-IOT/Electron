@@ -1,0 +1,2 @@
+rosrun rviz rviz -d ~/catkin_ws/src/tb2_2dnav/rviz/tb2.rviz
+

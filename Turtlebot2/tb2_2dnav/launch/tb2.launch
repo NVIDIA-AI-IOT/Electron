@@ -1,0 +1,6 @@
+<launch>
+
+    <include file="$(find tb2_2dnav)/launch/tb2_configuration.launch" />
+    <include file="$(find tb2_2dnav)/launch/move_base.launch" />
+
+</launch>
