@@ -486,7 +486,6 @@ n02981792 catamaran
 n02988304 CD player
 n02992211 cello, violoncello
 n02992529 cellular telephone, cellular phone, cellphone, cell, mobile phone
-n02995345 Processing Unit
 n02999410 chain
 n03000134 chainlink fence
 n03000247 chain mail, ring mail, mail, chain armor, chain armour, ring armor, ring armour
@@ -552,7 +551,6 @@ n03291819 envelope
 n03297495 espresso maker
 n03314780 face powder
 n03325584 feather boa, boa
-n03326948 markers
 n03337140 file, file cabinet, filing cabinet
 n03344393 fireboat
 n03345487 fire engine, fire truck
@@ -807,7 +805,6 @@ n04252225 snowplow, snowplough
 n04254120 soap dispenser
 n04254680 soccer ball
 n04254777 sock
-n04255586 soda can
 n04258138 solar dish, solar collector, solar furnace
 n04259630 sombrero
 n04263257 soup bowl
@@ -917,7 +914,6 @@ n04604644 worm fence, snake fence, snake-rail fence, Virginia fence
 n04606251 wreck
 n04612504 yawl
 n04613696 yurt
-n04972451 chocolate
 n06359193 web site, website, internet site, site
 n06596364 comic book
 n06785654 crossword puzzle, crossword

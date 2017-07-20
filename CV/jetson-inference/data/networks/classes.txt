@@ -1,9 +1,0 @@
-orange orange
-chocolate chocolate
-sodacan sodacan
-laptop laptop
-marker marker
-waterbottle waterbottle
-pen pen
-processing unit processing unit
-apple
