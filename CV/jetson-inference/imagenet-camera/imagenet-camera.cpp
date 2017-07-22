@@ -71,8 +71,8 @@ int main( int argc, char** argv )
 	 */
 
 	//imageNet* net = imageNet::Create("networks/ItemNet2/deploy.prototxt", "networks/ItemNet2/snapshot_iter_31659.caffemodel", NULL, "networks/classes1.txt", "data", "softmax");
-	imageNet* net = imageNet::Create("networks/googlenet.prototxt", "networks/bvlc_googlenet.caffemodel", NULL, "networks/ilsvrc12_synset_words.txt");
-	
+	imageNet* net = imageNet::Create("networks/ItemNetFinal/text.prototxt", "networks/ItemNetFinal/model.caffemodel", NULL, "networks/ilsvrc12_synset_words.txt");
+
 	if( !net )
 	{
 		printf("imagenet-console:   failed to initialize imageNet\n");
