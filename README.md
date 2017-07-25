@@ -1,6 +1,6 @@
 **The code in this repository has only been tested on the NVIDIA Jetson TX2. For installation instructions please scroll down, however we would reccomend that you read our description so you know what you're about to do.**
 
-# Electron: The project overview
+# The project overview
 This is the GitHub repo for Electron, a delivery robot. The goal of the robot is to succefully be able to deliver items to cubicles in an office building be it office supplies or food. The robot must be able to autonomously drive around a building while successfully retrieving and delivering these items, constantly, upon user request.
 
 > **Hardware Expectations**
