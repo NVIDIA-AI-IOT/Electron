@@ -35,8 +35,8 @@ class GoToPose():
 	# Start moving
         self.move_base.send_goal(goal)
 
-	# Allow TurtleBot up to 60 seconds to complete task
-	success = self.move_base.wait_for_result(rospy.Duration(60)) 
+	# Allow TurtleBot up to 10 minutes to complete task
+	success = self.move_base.wait_for_result(rospy.Duration(600)) 
 
         state = self.move_base.get_state()
         result = False
