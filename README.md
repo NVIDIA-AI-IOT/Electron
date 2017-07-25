@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/NVIDIA-Jetson/turtlebot3/blob/master/images/electron.png">
+</p>
+
 **The code in this repository has only been tested on the NVIDIA Jetson TX2. For installation instructions please scroll down, however we would reccomend that you read our description so you know what you're about to do.**
 
 # The project overview
