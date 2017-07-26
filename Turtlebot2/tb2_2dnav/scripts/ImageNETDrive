@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+import rospy
+from std_msgs.msg import String
+from geometry_msgs.msg import Twist
+
+import sys, select, termios, tty, time
+
+rospy.init_node('turtlebot2_drive')
+pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=5)
+
+twist = Twist()
+
+def publish():
+    print(twist)
+    pub.publish(twist)
+
+def callback(data):
+    print('callback')
+    #global twist
+    #twist = data
+
+def callbackItem(data):
+    print('item callback')
+    global twist
+    temp = str(data)
+    present = int(temp[len(temp)-1])
+    if present is 0:
+        print('set to 0')
+        twist.linear.x = 0; twist.linear.y = 0; twist.linear.z = 0
+        twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = 0
+
+def listener():
+    print('start')
+    rospy.Subscriber('/cmd_vel', Twist, callback)
+    rospy.Subscriber('/item', String, callbackItem)
+    publish()
+    print('published')
+    rospy.spin()
+    print('spun')
+
+if __name__=="__main__":
+    listener()
+ 	

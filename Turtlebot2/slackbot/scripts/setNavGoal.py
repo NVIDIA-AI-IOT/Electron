@@ -42,6 +42,9 @@ class GoToPose():
         state = self.move_base.get_state()
         result = False
 
+	rospy.loginfo("success: " + str(success))
+	rospy.loginfo("state: " + str(state))
+
         if success and state == GoalStatus.SUCCEEDED:
             # We made it!
             result = True

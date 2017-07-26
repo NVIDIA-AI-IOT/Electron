@@ -98,7 +98,6 @@ if __name__ == "__main__":
     f = open('points.txt', 'r')
     point_list = eval(str('{')+f.readline()+str('}'))
     print(point_list)
-    #point_list = {"Nick":[-0.7546565656565, 0.57545654, -0.4656656565, 0.0, 0.0, 0.54656565656, 0.56556565656]}
     if slack_client.rtm_connect():
         print("Bot connected and running!")
         is_loc = False
