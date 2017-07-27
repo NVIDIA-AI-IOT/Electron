@@ -44,37 +44,14 @@ def sendGoal(loc):
 Slack bot methods
 **************'''
 
-def handle_command(command, channel, points, location = False):
-    response = "Oh so you want a "
+def handle_command(command, channel, points):
     try:
-        tagged_sent = pos_tag(command.split())
-        propernouns = [word for word,pos in tagged_sent if pos == 'NN']
-        if len(propernouns) is not 0: response+=str(propernouns[len(propernouns)-1])
-        response+="! Is that correct?"
-        if 'ye' in command and 'yel' not in command:
-            print "yo"
-            response = "Cool! What's your location?"
-            slack_client.api_call("chat.postMessage", channel=channel,
-                                  text=response, as_user=True)
-            return True
-        elif "no" in command:
-            response = "Oh ok. What do you want then?"
-            slack_client.api_call("chat.postMessage", channel=channel,
-                                  text=response, as_user=True)
-            return False
-
-        if len(command.split()) is 1 and "Sorry" not in response and "Cool" not in response and "Is that correct" not in response:
-            response = "please use more than one word to tell me what you want. I.E. get me some salad"
-    except ValueError:
-        response = "Sorry! I'm confused. Please tell me what you want again."
-    if location:
-        try:
-	    slack_client.api_call("chat.postMessage", channel=channel,
+	slack_client.api_call("chat.postMessage", channel=channel,
                           text="Thanks! Your order will soon be delivered", as_user=True)
-            sendGoal(point_list[command])
-        except rospy.ROSInterruptException:
-            pass
-        response = "Your order has been delivered!"
+        sendGoal(point_list[command])
+    except rospy.ROSInterruptException:
+       pass
+    response = "Your order has been delivered!"
     slack_client.api_call("chat.postMessage", channel=channel,
                           text=response, as_user=True)
     return False
@@ -98,14 +75,10 @@ if __name__ == "__main__":
     print(point_list)
     if slack_client.rtm_connect():
         print("Bot connected and running!")
-        is_loc = False
-	item = ""
-	temp_item =''
         while True:
             command, channel = parse_slack_output(slack_client.rtm_read())
             if command and channel:
-		temp_item = item
-                is_loc = handle_command(command, channel, point_list, location = is_loc)
+                handle_command(command, channel, point_list)
             time.sleep(READ_WEBSOCKET_DELAY)
     else:
         print("Connection failed. Invalid Slack token or bot ID?")
