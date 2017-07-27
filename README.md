@@ -2,7 +2,7 @@
   <img src="https://github.com/NVIDIA-Jetson/turtlebot3/blob/master/images/electron.png">
 </p>
 
-**The code in this repository has only been tested on the NVIDIA Jetson TX2. For installation instructions please scroll down, however we would reccomend that you read our description so you know what you're about to do.**
+**The code in this repository has only been tested on the NVIDIA Jetson TX2. For installation instructions please go to the wiki. Most of the README is just a description of different things.**
 
 # The project overview
 This is the GitHub repo for Electron, a delivery robot. The goal of the robot is to succefully be able to deliver items to cubicles in an office building be it office supplies or food. The robot must be able to autonomously drive around a building while successfully retrieving and delivering these items, constantly, upon user request. We do this with the help of ROS, deep learning, and various other smart sensors.
