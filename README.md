@@ -107,3 +107,8 @@ cd catkin_ws/src/Electron/Turtlebot2/slackbot/scripts
 rosrun slackbot basedeliveryrobot.py
 ```
 You can now go to slack and message it by doing "@deliveryrobot LOCATION" and specifying the location based on what you added to `points.txt`
+
+
+## Setting up the Remote PC
+//TODO(Nick): export ROS_MASTER
+//TODO(Nick): Modify /etc/hosts
