@@ -84,42 +84,26 @@ Now go to https://my.slack.com/services/new/bot to create a new slackbot. After 
   <img src="http://i.imgur.com/9NQbjPZ.png">
 </p>
 
-The above token has been hidden but when you normally go to the page, you'll find a token. Now copy that token.
+The above token has been hidden but when you normally go to the page, you'll find a token. Now copy that token and do the following.
 
-`cd catkin_ws/src/Electron/Turtlebot2/slackbot/scripts`
-
-Now you can `export SLACK_BOT_TOKEN='ADD_YOUR_TOKEN_HERE'`
-
-Now run `python base_print_bot_id.py `
-
-Finally, run the the following commands:
-
-`
-cd
-`
-
-`
-gedit .bashrc
-`
-
-Now, edit the file by adding the following lines:
-
-`
-export SLACK_BOT_TOKEN='ADD_YOUR_TOKEN_HERE'
-`
-
-`
-export BOT_ID='ADD_BOT_ID_FROM_THE_PYTHON_SCRIPT'
-`
-
-You are now ready to run the slackbot.
-
-`
+```
 cd catkin_ws/src/Electron/Turtlebot2/slackbot/scripts
-`
-
-`
+export SLACK_BOT_TOKEN='ADD_YOUR_TOKEN_HERE'
+python base_print_bot_id.py
+```
+From this, you will get a bot id which you will have to export as a variable later. Finally, run the the following commands:
+```
+cd
+gedit .bashrc
+```
+Now, edit the file by adding the following lines:
+```
+export SLACK_BOT_TOKEN='ADD_YOUR_TOKEN_HERE'
+export BOT_ID='ADD_BOT_ID_FROM_THE_PYTHON_SCRIPT'
+```
+You are now ready to run the slackbot.
+```
+cd catkin_ws/src/Electron/Turtlebot2/slackbot/scripts
 rosrun slackbot basedeliveryrobot.py
-`
-
+```
 You can now go to slack and message it by doing "@deliveryrobot LOCATION" and specifying the location based on what you added to `points.txt`
