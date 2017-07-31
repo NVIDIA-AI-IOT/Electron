@@ -15,6 +15,8 @@ import setNavGoal as ng
 BOT_ID = os.environ.get("BOT_ID")
 AT_BOT = "<@" + BOT_ID + ">"
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
+rospy.init_node('slackbot', anonymous=False)
+pub = rospy.Publisher('/dstate', String, queue_size=10)
 
 '''def sendItem(item):
 	pub = rospy.Publisher('slackitem', String, queue_size=10)
@@ -23,7 +25,6 @@ slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
 def sendGoal(loc):
 	try:
-		rospy.init_node('Goal', anonymous=False)
 
 		clearCostMap()
 
@@ -55,10 +56,14 @@ Slack bot methods
 **************'''
 
 def handle_command(command, channel, points):
+    if("deliver" in command):
+	pub.publish(str("deliver"))
+    else:
+	pub.publish(str("fetch"))
     try:
 	slack_client.api_call("chat.postMessage", channel=channel,
                           text="Thanks! Your order will soon be delivered", as_user=True)
-        sendGoal(point_list[command])
+        sendGoal(point_list[command.split()[1]])
     except rospy.ROSInterruptException:
        pass
     response = "Your order has been delivered!"
@@ -79,6 +84,7 @@ def parse_slack_output(slack_rtm_output):
 
 
 if __name__ == "__main__":
+    rate = rospy.Rate(10)
     READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
     f = open('/home/nvidia/catkin_ws/src/Electron/Turtlebot2/slackbot/scripts/points.txt', 'r')
     point_list = eval(str('{')+f.readline()+str('}'))
