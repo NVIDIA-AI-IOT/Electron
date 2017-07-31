@@ -29,6 +29,8 @@ def sendGoal(loc):
 	try:
 		rospy.init_node('Goal', anonymous=False)
 
+		#clearCostMap()
+		
 		nav = ng.GoToPose()
 	
 		position = {'x': loc[0], 'y' : loc[1]}
@@ -96,6 +98,12 @@ def parse_slack_output(slack_rtm_output):
                        output['channel']
     return None, None
 
+def clearCostMap():
+	rospy.wait_for_service('move_base/clear_costmaps')
+	try: 
+		clear_costmaps = rospy.ServiceProxy('move_base/clear_costmaps',Empty)
+	except rospy.ServiceException, e:
+		print "Service call failed: %s"%e
 
 if __name__ == "__main__":
     rospy.init_node('slackbot', anonymous=True)

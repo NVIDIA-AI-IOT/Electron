@@ -3,6 +3,7 @@
 import rospy
 import actionlib
 import geometry_msgs
+from tb2_2dnav.srv import *
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import Pose, Point, Quaternion, PoseWithCovarianceStamped
 from actionlib_msgs.msg import *
@@ -56,18 +57,28 @@ class GoToPose():
         rospy.loginfo("Stop")
         rospy.sleep(1)
 
+    def clearCostMap(self):
+	rospy.wait_for_service('move_base/clear_costmaps')
+	try:
+	    clear_costmaps = rospy.ServiceProxy('move_base/clear_costmaps',Empty)
+	    print(clear_costmaps())
+	except rospy.ServiceException, e:
+	    print "Service call failed: %s"%e
+
 if __name__ == '__main__':
     try:
         rospy.init_node('nav_test', anonymous=False)
-        navigator = GoToPose()
+	navigator = GoToPose()
 
         # Change the following values based on which coordinate you want to go to on the map! Usually only x and y need to be changed.
         position = {'x': 9.76595, 'y' : 4.42364}
         quaternion = {'r1' : 0.000, 'r2' : 0.000, 'r3' : 0.98473, 'r4' : 0.17403}
 
-        rospy.loginfo("Go to (%s, %s) pose", position['x'], position['y'])
-        success = navigator.goto(position, quaternion)
+        navigator.clearCostMap()
 
+	rospy.loginfo("Go to (%s, %s) pose", position['x'], position['y'])
+        #success = navigator.goto(position, quaternion)
+	success = True
         if success:
             rospy.loginfo("YAYY, reached the desired pose")
         else:
