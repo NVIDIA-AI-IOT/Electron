@@ -6,6 +6,7 @@ from nltk.tag import pos_tag
 
 import rospy
 from std_msgs.msg import String
+from slackbot.srv import *
 
 import setNavGoal as ng
 
@@ -23,6 +24,8 @@ def sendGoal(loc):
 	try:
 		rospy.init_node('Goal', anonymous=False)
 
+		clearCostMap()
+
 		nav = ng.GoToPose()
 	
 		position = {'x': loc[0], 'y' : loc[1]}
@@ -39,7 +42,13 @@ def sendGoal(loc):
         	rospy.loginfo("Ctrl-C caught. Quitting")
 
 	
-
+def clearCostMap():
+	rospy.wait_for_service('move_base/clear_costmaps')
+	try:
+		clear_costmaps = rospy.ServiceProxy('move_base/clear_costmaps',Empty)
+		clear_costmaps()
+	except rospy.ServiceException, e:
+		print "Service call failed %s"%e
 '''**************
 Slack bot methods
 **************'''
