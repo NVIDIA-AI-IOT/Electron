@@ -14,15 +14,16 @@ import setNavGoal as ng
 BOT_ID = os.environ.get("BOT_ID")
 AT_BOT = "<@" + BOT_ID + ">"
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
+rospy.init_node('slackbot', anonymous=False)
+pub = rospy.Publisher('/dstate', String, queue_size=10)
 
-def sendState(state):
+'''def sendState(state):
 	print state
-	pub = rospy.Publisher('/dstate', String, queue_size=10)
-	rate = rospy.Rate(10) # 10hz
+	 # 10hz
 	if(state):
 		pub.publish(str("deliver"))
 	else: 
-		pub.publish(str("fetch"))
+		pub.publish(str("fetch"))'''
 
 def sendGoal(loc):
 	try:
@@ -50,11 +51,13 @@ Slack bot methods
 **************'''
 
 def handle_command(command, channel, points):
+    if("deliver" in command):
+	pub.publish(str("deliver"))
+    else:
+	pub.publish(str("fetch"))
     try:
 	slack_client.api_call("chat.postMessage", channel=channel,
                           text="Thanks! Your order will soon be delivered", as_user=True)
-	if("deliver" in command): sendState(True)
-	else: sendState(False)
         sendGoal(point_list[command.split()[1]])
     except rospy.ROSInterruptException:
        pass
@@ -76,7 +79,7 @@ def parse_slack_output(slack_rtm_output):
 
 
 if __name__ == "__main__":
-    rospy.init_node('Yo', anonymous=False)
+    rate = rospy.Rate(10)
     READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
     f = open('/home/nvidia/catkin_ws/src/Electron/Turtlebot2/slackbot/scripts/points.txt', 'r')
     point_list = eval(str('{')+f.readline()+str('}'))
