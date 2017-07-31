@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import sys
 import time
 from slackclient import SlackClient
 from nltk.tag import pos_tag
@@ -79,15 +80,20 @@ def parse_slack_output(slack_rtm_output):
 
 if __name__ == "__main__":
     READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
-    f = open('points.txt', 'r')
+    f = open('/home/nvidia/catkin_ws/src/Electron/Turtlebot2/slackbot/scripts/points.txt', 'r')
     point_list = eval(str('{')+f.readline()+str('}'))
     print(point_list)
     if slack_client.rtm_connect():
         print("Bot connected and running!")
         while True:
-            command, channel = parse_slack_output(slack_client.rtm_read())
-            if command and channel:
-                handle_command(command, channel, point_list)
-            time.sleep(READ_WEBSOCKET_DELAY)
+	    try:
+		    print "asfd"
+		    command, channel = parse_slack_output(slack_client.rtm_read())
+		    if command and channel:
+		        handle_command(command, channel, point_list)
+		    time.sleep(READ_WEBSOCKET_DELAY)
+	    except KeyboardInterrupt:
+		    print "fdsad"
+		    sys.quit()
     else:
         print("Connection failed. Invalid Slack token or bot ID?")

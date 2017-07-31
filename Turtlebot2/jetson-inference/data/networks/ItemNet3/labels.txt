@@ -1,8 +1,0 @@
-apple
-bottle
-chocolate
-laptop
-orange
-processor
-sodacan
-writing utensil

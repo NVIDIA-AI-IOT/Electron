@@ -3,6 +3,7 @@
 import rospy
 import actionlib
 import geometry_msgs
+import sys
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import Pose, Point, Quaternion, PoseWithCovarianceStamped
 from actionlib_msgs.msg import *
@@ -23,7 +24,7 @@ class GoToPose():
 	self.move_base.wait_for_server(rospy.Duration(5))
 
     def goto(self, pos, quat):
-
+	
         # Send a goal
         self.goal_sent = True
 	goal = MoveBaseGoal()
@@ -32,26 +33,29 @@ class GoToPose():
         goal.target_pose.pose = Pose(Point(pos['x'], pos['y'], 0.000),
                                      Quaternion(quat['r1'], quat['r2'], quat['r3'], quat['r4']))
 
-	# Start moving
-        self.move_base.send_goal(goal)
-	rospy.loginfo("Goal Sent")
+	try:	
+		# Start moving
+		self.move_base.send_goal(goal)
+		rospy.loginfo("Goal Sent")
 
-	# Allow TurtleBot up to 5 minutes to complete task
-	success = self.move_base.wait_for_result(rospy.Duration(300)) 
+		# Allow TurtleBot up to 5 minutes to complete task
+		success = self.move_base.wait_for_result(rospy.Duration(300)) 
 
-        state = self.move_base.get_state()
-        result = False
+		state = self.move_base.get_state()
+		result = False
 
-	rospy.loginfo("success: " + str(success))
-	rospy.loginfo("state: " + str(state))
+		rospy.loginfo("success: " + str(success))
+		rospy.loginfo("state: " + str(state))
+		if(not success): sys.exit()
+		if success and state == GoalStatus.SUCCEEDED:
+		    # We made it!
+		    result = True
+		else:
+		    self.move_base.cancel_goal()
 
-        if success and state == GoalStatus.SUCCEEDED:
-            # We made it!
-            result = True
-        else:
-            self.move_base.cancel_goal()
-
-        self.goal_sent = False
+		self.goal_sent = False
+	except KeyboardInterrupt:
+		sys.exit()
         return result
 
     def shutdown(self):
