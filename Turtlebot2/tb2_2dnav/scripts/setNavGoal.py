@@ -41,6 +41,7 @@ class GoToPose():
         state = self.move_base.get_state()
         result = False
 
+	if(state == GoalStatus.FAILED): quit()
         if success and state == GoalStatus.SUCCEEDED:
             # We made it!
             result = True

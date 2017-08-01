@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2011, Willow Garage, Inc.
+#Copyright (c) 2011, Willow Garage, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 
 import rospy
 
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Twist, PoseWithCovarianceStamped
 
 import sys, select, termios, tty
 
@@ -49,15 +49,7 @@ anything else : stop smoothly
 
 CTRL-C to quit
 """
-class Reader:
-   def callback(self, data):
-    	print('loc callback')
-   	self.loc = data
-    
-   def __init__(self):
-	self.loc = Pose()
-	rospy.Subscriber('/cmd_vel', Twist, self.callback)
-	
+
 moveBindings = {
         'i':(1,0),
         'o':(1,-1),
@@ -78,7 +70,6 @@ speedBindings={
         'c':(1,.9),
           }
 
-
 def getKey():
     tty.setraw(sys.stdin.fileno())
     rlist, _, _ = select.select([sys.stdin], [], [], 0.1)
@@ -97,13 +88,12 @@ def vels(speed,turn):
     return "currently:\tspeed %s\tturn %s " % (speed,turn)
 
 if __name__=="__main__":
-    read = Reader()
-    ofile = open("locations.txt", "w")
     settings = termios.tcgetattr(sys.stdin)
-    
-    rospy.init_node('turtlebot_teleop')
-    pub = rospy.Publisher('~cmd_vel', Twist, queue_size=5)
+    f = open('points.txt', 'w')
 
+    rospy.init_node('turtlebot_teleop', anonymous=True)       
+    pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=5)
+    
     x = 0
     th = 0
     status = 0
@@ -113,9 +103,10 @@ if __name__=="__main__":
     target_turn = 0
     control_speed = 0
     control_turn = 0
+    print vels(speed,turn)
+    print msg
+
     try:
-        print msg
-        print vels(speed,turn)
         while(1):
             key = getKey()
             if key in moveBindings.keys():
@@ -136,10 +127,15 @@ if __name__=="__main__":
                 th = 0
                 control_speed = 0
                 control_turn = 0
-	    elif key == 'l':
-		loc_list = [read.loc.positon.x, read.loc.positon.y, read.loc.positon.z, read.loc.orientation.x, read.loc.orientation.y, read.loc.orientation.z, read.loc.orientation.w]
-		ofile.write(('"'+str(raw_input("Location: "))+'":'+str(loc_list)+",").rstrip('\n'))
-            else:
+            elif key == 'a':
+		print"What's the name of this location?"
+		name = raw_input()
+		pose = rospy.wait_for_message("/amcl_pose", PoseWithCovarianceStamped)
+		msg = '"' + str(name) + '":[' + str(pose.pose.pose.position.x) + ',' + str(pose.pose.pose.position.y) + ',' + str(pose.pose.pose.position.z) + ',' + str(pose.pose.pose.orientation.x) + ',' + str(pose.pose.pose.orientation.y) + ',' + str(pose.pose.pose.orientation.z) + ',' + str(pose.pose.pose.orientation.w) + '],'
+		f.write(msg)
+		print("\n" +msg)
+		print"You can continue driving"
+	    else:
                 count = count + 1
                 if count > 4:
                     x = 0

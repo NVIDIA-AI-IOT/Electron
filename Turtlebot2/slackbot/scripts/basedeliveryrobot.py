@@ -63,7 +63,7 @@ def handle_command(command, channel, points):
     try:
 	slack_client.api_call("chat.postMessage", channel=channel,
                           text="Thanks! Your order will soon be delivered", as_user=True)
-        sendGoal(point_list[command.split()[1]])
+        sendGoal(point_list[command.split(' ', 1)[1]])
     except rospy.ROSInterruptException:
        pass
     response = "Your order has been delivered!"
@@ -93,7 +93,6 @@ if __name__ == "__main__":
         print("Bot connected and running!")
         while True:
 	    try:
-		    print "asfd"
 		    command, channel = parse_slack_output(slack_client.rtm_read())
 		    if command and channel:
 		        handle_command(command, channel, point_list)
