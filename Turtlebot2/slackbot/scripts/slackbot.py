@@ -7,7 +7,7 @@ from nltk.tag import pos_tag
 
 import rospy
 from std_msgs.msg import String
-from slackbot.srv import *
+from std_srvs.srv import Empty
 
 import setNavGoal as ng
 
