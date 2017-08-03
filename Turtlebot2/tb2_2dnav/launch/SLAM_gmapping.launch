@@ -1,6 +1,9 @@
 
 <launch>
 
+  <!-- runs startup nodes like lidar and tf transforms -->
+  <include file="$(find tb2_2dnav)/launch/tb2_configuration.launch" />
+
   <!-- Gmapping -->
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
     <param name="base_frame" value="base_footprint"/>

@@ -1,0 +1,6 @@
+## The Different Drive Modes:
+
+1. <b>drive.py</b> - The most basic driving. Remaps from the topic `/cmd_vel` which is published by the NavStack to the topic `cmd_vel_mux/input/teleop` which is the drive input for the TurtleBot.
+2. <b>image_net_drive.py</b> - Built on top of `drive.py` and includes taking in input of the robot state of delivering or fetching, and the item on top of the robot. This functionality is utilized when stopping the robot when it's delivering an object and the item gets removed mid driving.
+3. <b>teleop_key_record.py</b> - Has the same functionality as `drive.py` but also includes teleoperation control on the keyboard. Also includes the ability to record the location and orientation of the robot to create a list of waypoints for navigating to later. This can be accomplished when running AMCL in NavStack  and by pressing the `a` key. A file called `points.txt` would be created and can be used when moved into the `slackbot/scripts` directory.
+4. <b>SHIELD_drive.py</b> - Very similar to `drive.py` but instead remaps from the `/joy` topic, which is published by the node on the NVIDIA SHIELD Portable. <b>Disclaimer: The SHIELD Portable is no longer for sale and support for the [SHIELD_teleop node](http://wiki.ros.org/shield_teleop) is no longer continued. This was just a side project. </b>

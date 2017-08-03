@@ -3,13 +3,12 @@ import os
 import sys
 import time
 from slackclient import SlackClient
-from nltk.tag import pos_tag
 
 import rospy
 from std_msgs.msg import String
-from slackbot.srv import *
+from std_srvs.srv import Empty
 
-import setNavGoal as ng
+import set_nav_goal as ng
 
 # bot's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")
@@ -86,7 +85,7 @@ def parse_slack_output(slack_rtm_output):
 if __name__ == "__main__":
     rate = rospy.Rate(10)
     READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
-    f = open('/home/nvidia/catkin_ws/src/Electron/Turtlebot2/slackbot/scripts/points.txt', 'r')
+    f = open('/home/nvidia/catkin_ws/src/Electron/Turtlebot2/slackbot/scripts/new_points.txt', 'r')
     point_list = eval(str('{')+f.readline()+str('}'))
     print(point_list)
     if slack_client.rtm_connect():
