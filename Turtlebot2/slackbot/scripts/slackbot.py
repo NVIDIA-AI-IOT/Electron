@@ -85,7 +85,7 @@ def parse_slack_output(slack_rtm_output):
 if __name__ == "__main__":
     rate = rospy.Rate(10)
     READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
-    f = open('/home/nvidia/catkin_ws/src/Electron/Turtlebot2/slackbot/scripts/new_points.txt', 'r')
+    f = open('/home/nvidia/catkin_ws/src/Electron/Turtlebot2/slackbot/scripts/points.txt', 'r')
     point_list = eval(str('{')+f.readline()+str('}'))
     print(point_list)
     if slack_client.rtm_connect():
